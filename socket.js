@@ -16,9 +16,9 @@ function initializeSocket(server) {
     });
     //handle private msg
     socket.on("private-msg", (data) => {
-      const { userId, message } = data;
+      const { recepient, sender, message } = data;
 
-      io.emit(userId, message);
+      io.emit(recepient, { sender, messages });
     });
     // Handle disconnections
     socket.on("disconnect", () => {

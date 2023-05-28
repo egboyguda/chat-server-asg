@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     };
     const token = jwt.encode(payload, config.jwtSecret);
 
-    res.json({ token: token });
+    res.json({ token: token, userId: user.id });
   } catch (error) {
     res.status(442).send(error.message);
   }

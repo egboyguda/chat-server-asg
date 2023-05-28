@@ -1,4 +1,6 @@
 const socketIO = require("socket.io");
+const Chat = require("./models/chat.model");
+const { getChat } = require("./controllers/chat.controller");
 
 function initializeSocket(server) {
   const io = socketIO(server);
@@ -8,18 +10,27 @@ function initializeSocket(server) {
     console.log(`A user connected ${socket.id}`);
 
     // Handle events from the client
-    socket.on("chat message", (message) => {
+    socket.on("chat message", async (message) => {
       console.log("Received message:", message);
 
-      // Broadcast the message to all connected clients
-      io.emit("chat message", message);
-    });
-    //handle private msg
-    socket.on("private-msg", (data) => {
-      const { recepient, sender, message } = data;
+      const chat = await new Chat({
+        sender: message.sender,
+        recipient: message.receiver,
+        message: message.msg,
+      }).populate([
+        { path: "sender", select: "username" },
+        { path: "recipient", select: "username" },
+      ]);
 
-      io.emit(recepient, { sender, messages });
+      await chat.save();
+      if (message.isReply) {
+        io.emit(message.sender, chat);
+      } else {
+        io.emit(message.receiver, chat);
+      }
+      // Broadcast the message to all connected clients
     });
+
     // Handle disconnections
     socket.on("disconnect", () => {
       console.log("A user disconnected");

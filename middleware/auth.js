@@ -11,18 +11,24 @@ var params = {
 };
 
 module.exports = function () {
-  var strategy = new Strategy(params, function (payload, done) {
-    var user = User.findById(payload.id, function (err, user) {
-      if (err) {
+  var strategy = new Strategy(params, async function (payload, done) {
+    try {
+      var user = await User.findById(payload.id);
+
+      if (!user) {
         return done(new Error("UserNotFound"), null);
       } else if (payload.expire <= Date.now()) {
         return done(new Error("TokenExpired"), null);
       } else {
         return done(null, user);
       }
-    });
+    } catch (err) {
+      return done(err, null);
+    }
   });
+
   passport.use(strategy);
+
   return {
     initialize: function () {
       return passport.initialize();

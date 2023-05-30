@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     };
     const token = jwt.encode(payload, config.jwtSecret);
 
-    res.json({ token: token, userId: user.id });
+    res.json({ token: token, userId: user._id, username: user.username });
   } catch (error) {
     res.status(442).send(error.message);
   }
@@ -34,7 +34,8 @@ exports.login = async function (req, res) {
     var token = jwt.encode(payload, config.jwtSecret);
     res.json({
       token: token,
-      userId: user.id,
+      userId: user._id,
+      username: user.username,
     });
   }
 };

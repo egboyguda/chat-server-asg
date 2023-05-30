@@ -23,11 +23,9 @@ function initializeSocket(server) {
       ]);
 
       await chat.save();
-      if (message.isReply) {
-        io.emit(message.sender, chat);
-      } else {
-        io.emit(message.receiver, chat);
-      }
+
+      io.emit(message.receiver, chat);
+      io.emit(message.sender, chat);
       // Broadcast the message to all connected clients
     });
 

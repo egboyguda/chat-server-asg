@@ -48,6 +48,7 @@ exports.register = async (req, res) => {
 };
 
 exports.login = function (req, res, next) {
+  console.log(req.body);
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err) {
       return res.status(500).json({ message: "Internal server error" });

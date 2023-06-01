@@ -58,3 +58,28 @@ exports.getChat = async (req, res) => {
   ]);
   res.send(chat);
 };
+
+exports.deleteChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const otherUserId = req.body.id;
+    console.log(otherUserId);
+    // Delete all chat messages where the sender is either req.user or req.query.id
+    const chat = await Chat.deleteMany({
+      $or: [
+        {
+          sender: new mongoose.Types.ObjectId(userId),
+          recipient: new mongoose.Types.ObjectId(otherUserId),
+        },
+        {
+          sender: new mongoose.Types.ObjectId(otherUserId),
+          recipient: new mongoose.Types.ObjectId(userId),
+        },
+      ],
+    });
+    console.log(chat);
+    res.json({ message: "Chat messages deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

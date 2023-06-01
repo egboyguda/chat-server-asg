@@ -3,7 +3,7 @@ const Chat = require("../models/chat.model");
 const User = require("../models/user.model");
 const mongoose = require("mongoose");
 exports.getChat = async (req, res) => {
-  const { user } = req.query;
+  const user = req.user._id;
   const chat = await Chat.aggregate([
     {
       $match: {
